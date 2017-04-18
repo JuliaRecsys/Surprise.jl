@@ -1,4 +1,4 @@
-# Surprise.jl - Collaborative Filtering in Julia
+# Surprise.jl - Wrapper to Surprise Python Package
 
 [![Build Status](https://travis-ci.org/filipebraida/Surprise.jl.svg?branch=master)](https://travis-ci.org/filipebraida/Surprise.jl)
 [![Coverage Status](https://coveralls.io/repos/filipebraida/Surprise.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/filipebraida/Surprise.jl?branch=master)
