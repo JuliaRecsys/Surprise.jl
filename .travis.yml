@@ -1,0 +1,25 @@
+# Documentation: http://docs.travis-ci.com/user/languages/julia/
+language: julia
+os:
+  - linux
+julia:
+  - release
+  - nightly
+before_install:
+ - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -qq update              ; fi
+ - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y python-pip   ; fi
+ - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then pip install --user numpy             ; fi
+ - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then pip install --user scikit-surprise   ; fi
+notifications:
+  email: false
+# uncomment the following lines to override the default test script
+#script:
+#  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
+#  - julia -e 'Pkg.clone(pwd()); Pkg.build("Surprise"); Pkg.test("Surprise"; coverage=true)'
+after_success:
+  - julia -e 'Pkg.add("Documenter")'
+  - julia -e 'cd(Pkg.dir("Surprise")); include(joinpath("docs", "make.jl"))'
+  # push coverage results to Coveralls
+  - julia -e 'cd(Pkg.dir("Surprise")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
+  # push coverage results to Codecov
+  - julia -e 'cd(Pkg.dir("Surprise")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
