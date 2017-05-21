@@ -1,24 +1,17 @@
-using Surprise
-reload("Surprise")
 using Base.Test
+
+using Surprise
 using Persa
-reload("Persa")
+
 #Testing
-cf = Persa
-ds = cf.createdummydataset()
+ds = Persa.createdummydataset()
 
-holdout = cf.HoldOut(ds, 0.9)
+holdout = Persa.HoldOut(ds, 0.9)
 
-(ds_train, ds_test) = cf.get(holdout)
-#####
-model = Surprise.SurpriseKNNWithMeans(ds_train; k = 60, min_k = 60)
-####
-cf.train!(model, ds_train)
+(ds_train, ds_test) = Persa.get(holdout)
 
-@assert cf.aval(model, ds_test).mae >= 0.0
+model = Surprise.IRSVD(ds_train)
 
-typeof(ds_train)
+Persa.train!(model, ds_train)
 
-
-#######
-a = Surprise.GlobalMean3()
+@assert Persa.aval(model, ds_test).mae >= 0.0
