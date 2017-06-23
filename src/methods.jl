@@ -1,9 +1,11 @@
 using PyCall
 @pyimport surprise
 
-abstract SurpriseModel <: Persa.CFModel
+abstract type SurpriseModel <: Persa.CFModel
+  
+end
 
-type KNNBasic <: SurpriseModel
+mutable struct KNNBasic <: SurpriseModel
   object::PyObject
   preferences::Persa.RatingPreferences
   k::Int
@@ -14,7 +16,7 @@ function KNNBasic{T<:Persa.CFDatasetAbstract}(dataset::T; k = 40, min_k = 1)
   return KNNBasic(surprise.KNNBasic(k = k, min_k = min_k), dataset.preferences, k , min_k);
 end
 
-type KNNBaseline <: SurpriseModel
+mutable struct KNNBaseline <: SurpriseModel
   object::PyObject
   preferences::Persa.RatingPreferences
   k::Int
@@ -25,7 +27,7 @@ function KNNBaseline(dataset::Persa.CFDatasetAbstract; k = 40, min_k = 1)
   return KNNBaseline(surprise.KNNBaseline(k = k, min_k = min_k), dataset.preferences, k , min_k);
 end
 
-type KNNWithMeans <: SurpriseModel
+mutable struct KNNWithMeans <: SurpriseModel
   object::PyObject
   preferences::Persa.RatingPreferences{Float64}
   k::Int
@@ -41,7 +43,7 @@ function KNNWithMeans(dataset; k::Int = 40, min_k::Int = 1)
 end
 
 
-type SlopeOne <: SurpriseModel
+mutable struct SlopeOne <: SurpriseModel
   object::PyObject
   preferences::Persa.RatingPreferences
 end
@@ -50,7 +52,7 @@ function SlopeOne{T<:Persa.CFDatasetAbstract}(dataset::T)
   return SlopeOne(surprise.SlopeOne(), dataset.preferences);
 end
 
-type SVD <: SurpriseModel
+mutable struct SVD <: SurpriseModel
   object::PyObject
   preferences::Persa.RatingPreferences
   features::Int
