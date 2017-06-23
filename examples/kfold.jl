@@ -4,7 +4,7 @@ using DatasetsCF
 
 ds = DatasetsCF.MovieLens()
 
-for (ds_train, ds_test) in cf.KFolds(ds, 10)
+for (ds_train, ds_test) in Persa.KFolds(ds, 10)
   model = Surprise.IRSVD(ds_train)
 
   Persa.train!(model, ds_train)
