@@ -12,6 +12,15 @@ mutable struct KNNBasic <: SurpriseModel
   min_k::Int
 end
 
+"""
+    KNNBasic(dataset::Persa.CFDatasetAbstract; k = 40, min_k = 1)
+
+A basic KNN algorithm.
+
+# Arguments
+- `k::Int = 40`: Maximum Number of neighbors used.
+- `min_k::Int = 1`: Minimum number of neighbors used.
+"""
 function KNNBasic(dataset::Persa.CFDatasetAbstract; k = 40, min_k = 1)
   return KNNBasic(surprise.KNNBasic(k = k, min_k = min_k), dataset.preferences, k , min_k);
 end
@@ -23,6 +32,15 @@ mutable struct KNNBaseline <: SurpriseModel
   min_k::Int
 end
 
+"""
+    KNNBaseline(dataset::Persa.CFDatasetAbstract; k = 40, min_k = 1)
+
+A basic KNN algorithm but using a baseline factor.
+
+# Arguments
+- `k::Int = 40`: Maximum Number of neighbors used.
+- `min_k::Int = 1`: Minimum number of neighbors used.
+"""
 function KNNBaseline(dataset::Persa.CFDatasetAbstract; k = 40, min_k = 1)
   return KNNBaseline(surprise.KNNBaseline(k = k, min_k = min_k), dataset.preferences, k , min_k);
 end
@@ -34,6 +52,15 @@ mutable struct KNNWithMeans <: SurpriseModel
   min_k::Int
 end
 
+"""
+    KNNWithMeans(dataset::Persa.CFDatasetAbstract; k = 40, min_k = 1)
+
+A basic KNN algorithm but using user or item mean.
+
+# Arguments
+- `k::Int = 40`: Maximum Number of neighbors used.
+- `min_k::Int = 1`: Minimum number of neighbors used.
+"""
 function KNNWithMeans(dataset; k::Int = 40, min_k::Int = 1)
   println(dataset)
   println(dataset.preferences)
@@ -48,6 +75,11 @@ mutable struct SlopeOne <: SurpriseModel
   preferences::Persa.RatingPreferences
 end
 
+"""
+    SlopeOne(dataset::Persa.CFDatasetAbstract)
+
+SlopeOne algorithm.
+"""
 function SlopeOne(dataset::Persa.CFDatasetAbstract)
   return SlopeOne(surprise.SlopeOne(), dataset.preferences);
 end
@@ -65,10 +97,33 @@ function SVD(dataset::Persa.CFDatasetAbstract, biased::Bool; features = 100, n_e
   return SVD(surprise.SVD(biased = biased, n_factors = features, n_epochs = n_epochs, lr_all = lrate, reg_all = lambda), dataset.preferences, features, n_epochs, lrate, lambda);
 end
 
+"""
+    IRSVD(dataset::Persa.CFDatasetAbstract; features = 100, n_epochs = 20, lrate = 0.005, lambda = 0.02)
+
+Improved Regulared SVD. Extension of RSVD algorithm adding the user and item
+bias.
+
+# Arguments
+- `features::Int = 100`: Number of factors.
+- `n_epochs::Int = 20`: The number of iteration of the SGD algorithm.
+- `lrate::Float = 0.005`: Learning rate parameter.
+- `lambda::Int = 0.02`: Regularization parameter.
+"""
 function IRSVD(dataset::Persa.CFDatasetAbstract; features = 100, n_epochs = 20, lrate = 0.005, lambda = 0.02)
   return SVD(dataset, true; features = features, n_epochs = n_epochs, lrate = lrate, lambda = lambda);
 end
 
+"""
+    RSVD(dataset::Persa.CFDatasetAbstract; features = 100, n_epochs = 20, lrate = 0.005, lambda = 0.02)
+
+Regulared SVD. The algorithm is also known as SVD by Funk.
+
+# Arguments
+- `features::Int = 100`: Number of factors.
+- `n_epochs::Int = 20`: The number of iteration of the SGD algorithm.
+- `lrate::Float = 0.005`: Learning rate parameter.
+- `lambda::Int = 0.02`: Regularization parameter.
+"""
 function RSVD(dataset::Persa.CFDatasetAbstract; features = 100, n_epochs = 20, lrate = 0.005, lambda = 0.02)
   return SVD(dataset, false; features = features, n_epochs = n_epochs, lrate = lrate, lambda = lambda);
 end
