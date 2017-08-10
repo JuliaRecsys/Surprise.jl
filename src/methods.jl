@@ -48,7 +48,7 @@ mutable struct SlopeOne <: SurpriseModel
   preferences::Persa.RatingPreferences
 end
 
-function SlopeOne{T<:Persa.CFDatasetAbstract}(dataset::T)
+function SlopeOne(dataset::Persa.CFDatasetAbstract)
   return SlopeOne(surprise.SlopeOne(), dataset.preferences);
 end
 
@@ -61,15 +61,15 @@ mutable struct SVD <: SurpriseModel
   lambda::Float64
 end
 
-function SVD{T<:Persa.CFDatasetAbstract}(dataset::T, biased::Bool; features = 100, n_epochs = 20, lrate = 0.005, lambda = 0.02)
+function SVD(dataset::Persa.CFDatasetAbstract, biased::Bool; features = 100, n_epochs = 20, lrate = 0.005, lambda = 0.02)
   return SVD(surprise.SVD(biased = biased, n_factors = features, n_epochs = n_epochs, lr_all = lrate, reg_all = lambda), dataset.preferences, features, n_epochs, lrate, lambda);
 end
 
-function IRSVD{T<:Persa.CFDatasetAbstract}(dataset::T; features = 100, n_epochs = 20, lrate = 0.005, lambda = 0.02)
+function IRSVD(dataset::Persa.CFDatasetAbstract; features = 100, n_epochs = 20, lrate = 0.005, lambda = 0.02)
   return SVD(dataset, true; features = features, n_epochs = n_epochs, lrate = lrate, lambda = lambda);
 end
 
-function RSVD{T<:Persa.CFDatasetAbstract}(dataset::T; features = 100, n_epochs = 20, lrate = 0.005, lambda = 0.02)
+function RSVD(dataset::Persa.CFDatasetAbstract; features = 100, n_epochs = 20, lrate = 0.005, lambda = 0.02)
   return SVD(dataset, false; features = features, n_epochs = n_epochs, lrate = lrate, lambda = lambda);
 end
 
