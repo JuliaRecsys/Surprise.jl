@@ -2,7 +2,7 @@ using PyCall
 @pyimport surprise
 
 abstract type SurpriseModel <: Persa.CFModel
-  
+
 end
 
 mutable struct KNNBasic <: SurpriseModel
@@ -81,7 +81,7 @@ Persa.predict(model::KNNBaseline, user::Int, item::Int) = Persa.correct(model.ob
 
 Persa.predict(model::KNNWithMeans, user::Int, item::Int) = Persa.correct(model.object[:estimate](user - 1, item - 1)[1], model.preferences)
 
-function Persa.canPredict(model::KNNBasic, user::Int, item::Int)
+function Persa.canpredict(model::KNNBasic, user::Int, item::Int)
   try
     return model.object[:estimate](user - 1, item - 1)[2]["actual_k"] >= model.min_k ? true : false
   catch
@@ -89,7 +89,7 @@ function Persa.canPredict(model::KNNBasic, user::Int, item::Int)
   end
 end
 
-function Persa.canPredict(model::KNNBaseline, user::Int, item::Int)
+function Persa.canpredict(model::KNNBaseline, user::Int, item::Int)
   try
     return model.object[:estimate](user - 1, item - 1)[2]["actual_k"] >= model.min_k ? true : false
   catch
@@ -97,7 +97,7 @@ function Persa.canPredict(model::KNNBaseline, user::Int, item::Int)
   end
 end
 
-function Persa.canPredict(model::KNNWithMeans, user::Int, item::Int)
+function Persa.canpredict(model::KNNWithMeans, user::Int, item::Int)
   try
     return model.object[:estimate](user - 1, item - 1)[2]["actual_k"] >= model.min_k ? true : false
   catch
@@ -105,7 +105,7 @@ function Persa.canPredict(model::KNNWithMeans, user::Int, item::Int)
   end
 end
 
-function Persa.canPredict(model::SurpriseModel, user::Int, item::Int)
+function Persa.canpredict(model::SurpriseModel, user::Int, item::Int)
   try
     model.object[:estimate](user - 1, item - 1)
     return true
