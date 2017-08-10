@@ -12,7 +12,7 @@ mutable struct KNNBasic <: SurpriseModel
   min_k::Int
 end
 
-function KNNBasic{T<:Persa.CFDatasetAbstract}(dataset::T; k = 40, min_k = 1)
+function KNNBasic(dataset::Persa.CFDatasetAbstract; k = 40, min_k = 1)
   return KNNBasic(surprise.KNNBasic(k = k, min_k = min_k), dataset.preferences, k , min_k);
 end
 
