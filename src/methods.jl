@@ -3,7 +3,9 @@ using PyCall
 
 abstract type SurpriseModel <: Persa.CFModel end
 
-mutable struct KNNBasic <: SurpriseModel
+abstract type KNNAbstract <: SurpriseModel end
+
+mutable struct KNNBasic <: KNNAbstract
   object::PyObject
   preferences::Persa.RatingPreferences
   k::Int
@@ -23,7 +25,7 @@ function KNNBasic(dataset::Persa.CFDatasetAbstract; k = 40, min_k = 1)
   return KNNBasic(surprise.KNNBasic(k = k, min_k = min_k), dataset.preferences, k , min_k);
 end
 
-mutable struct KNNBaseline <: SurpriseModel
+mutable struct KNNBaseline <: KNNAbstract
   object::PyObject
   preferences::Persa.RatingPreferences
   k::Int
@@ -43,7 +45,7 @@ function KNNBaseline(dataset::Persa.CFDatasetAbstract; k = 40, min_k = 1)
   return KNNBaseline(surprise.KNNBaseline(k = k, min_k = min_k), dataset.preferences, k , min_k);
 end
 
-mutable struct KNNWithMeans <: SurpriseModel
+mutable struct KNNWithMeans <: KNNAbstract
   object::PyObject
   preferences::Persa.RatingPreferences{Float64}
   k::Int
@@ -128,34 +130,34 @@ function Persa.predict(model::SurpriseModel, user::Int, item::Int)
     uid, vid = rawtoid(model.object, user, item)
 
     if isnan(uid) || isnan(vid)
-        return false
+        return NaN
     end
 
     return Persa.correct(model.object[:estimate](uid, vid), model.preferences)
 end
 
-function Persa.canpredict(model::KNNBasic, user::Int, item::Int)
-  try
-    return model.object[:estimate](user - 1, item - 1)[2]["actual_k"] >= model.min_k ? true : false
-  catch
-    return false
-  end
+function Persa.predict(model::KNNAbstract, user::Int, item::Int)
+    uid, vid = rawtoid(model.object, user, item)
+
+    if isnan(uid) || isnan(vid)
+        return NaN
+    end
+
+    return Persa.correct(model.object[:estimate](uid, vid)[1], model.preferences)
 end
 
-function Persa.canpredict(model::KNNBaseline, user::Int, item::Int)
-  try
-    return model.object[:estimate](user - 1, item - 1)[2]["actual_k"] >= model.min_k ? true : false
-  catch
-    return false
-  end
-end
+function Persa.canpredict(model::KNNAbstract, user::Int, item::Int)
+    uid, vid = rawtoid(model.object, user, item)
 
-function Persa.canpredict(model::KNNWithMeans, user::Int, item::Int)
-  try
-    return model.object[:estimate](user - 1, item - 1)[2]["actual_k"] >= model.min_k ? true : false
-  catch
-    return false
-  end
+    if isnan(uid) || isnan(vid)
+        return false
+    end
+
+    try
+        return model.object[:estimate](uid, vid)[2]["actual_k"] >= model.min_k ? true : false
+    catch
+        return false
+    end
 end
 
 function Persa.canpredict(model::SurpriseModel, user::Int, item::Int)
