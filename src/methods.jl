@@ -1,9 +1,7 @@
 using PyCall
 @pyimport surprise
 
-abstract type SurpriseModel <: Persa.CFModel
-
-end
+abstract type SurpriseModel <: Persa.CFModel end
 
 mutable struct KNNBasic <: SurpriseModel
   object::PyObject
@@ -79,7 +77,7 @@ end
 SlopeOne algorithm.
 """
 function SlopeOne(dataset::Persa.CFDatasetAbstract)
-  return SlopeOne(surprise.SlopeOne(), dataset.preferences);
+  return SlopeOne(surprise.SlopeOne(), dataset.preferences, Dict{Int, Int}(), Dict{Int, Int}());
 end
 
 mutable struct SVD <: SurpriseModel
@@ -126,13 +124,15 @@ function RSVD(dataset::Persa.CFDatasetAbstract; features = 100, n_epochs = 20, l
   return SVD(dataset, false; features = features, n_epochs = n_epochs, lrate = lrate, lambda = lambda);
 end
 
-Persa.predict(model::SurpriseModel, user::Int, item::Int) = Persa.correct(model.object[:estimate](user - 1, item - 1), model.preferences)
+function Persa.predict(model::SurpriseModel, user::Int, item::Int)
+    uid, vid = rawtoid(model.object, user, item)
 
-Persa.predict(model::KNNBasic, user::Int, item::Int) = Persa.correct(model.object[:estimate](user - 1, item - 1)[1], model.preferences)
+    if isnan(uid) || isnan(vid)
+        return false
+    end
 
-Persa.predict(model::KNNBaseline, user::Int, item::Int) = Persa.correct(model.object[:estimate](user - 1, item - 1)[1], model.preferences)
-
-Persa.predict(model::KNNWithMeans, user::Int, item::Int) = Persa.correct(model.object[:estimate](user - 1, item - 1)[1], model.preferences)
+    return Persa.correct(model.object[:estimate](uid, vid), model.preferences)
+end
 
 function Persa.canpredict(model::KNNBasic, user::Int, item::Int)
   try
@@ -159,39 +159,62 @@ function Persa.canpredict(model::KNNWithMeans, user::Int, item::Int)
 end
 
 function Persa.canpredict(model::SurpriseModel, user::Int, item::Int)
-  try
-    model.object[:estimate](user - 1, item - 1)
+    uid, vid = rawtoid(model.object, user, item)
+
+    if isnan(uid) || isnan(vid)
+        return false
+    end
+
     return true
-  catch
-    return false
-  end
+end
+
+rawtoid(object::PyObject, user::Int, item::Int) = (raw2inneruser(object, user), raw2inneritem(object, item))
+
+function raw2inneruser(object::PyObject, user::Int)
+    try
+        return object[:trainset][:to_inner_uid](user)
+    catch
+        return NaN
+    end
+end
+
+function raw2inneritem(object::PyObject, item::Int)
+    try
+        return object[:trainset][:to_inner_iid](item)
+    catch
+        return NaN
+    end
 end
 
 function transform(ds::Persa.CFDatasetAbstract)
-  u = Dict()
-  v = Dict()
-  uu = Dict()
-  vv = Dict()
-  for i=1:ds.users
-    u[i - 1] = Array{Tuple}(0)
-    uu[i - 1] = i
-  end
+    users = sort(unique(ds.file[:user]))
+    items = sort(unique(ds.file[:item]))
 
-  for i=1:ds.items
-    v[i - 1] = Array{Tuple}(0)
-    vv[i - 1] = i
-  end
+    u = Dict{Int, Array{Tuple}}()
+    v = Dict{Int, Array{Tuple}}()
+    u_raw_inner = Dict{Int, Int}()
+    v_raw_inner = Dict{Int, Int}()
 
-  for i=1:length(ds)
-    Base.push!(u[ds.file[i,1] - 1], (ds.file[i, 2] - 1, ds.file[i, 3]))
-    Base.push!(v[ds.file[i,2] - 1],(ds.file[i, 1] - 1, ds.file[i, 3]))
-  end
+    for i=1:length(users)
+      u[i - 1] = Array{Tuple}(0)
+      u_raw_inner[users[i]] = i - 1
+    end
 
-  return surprise.Trainset(u, v, ds.users, ds.items, length(ds), (ds.preferences.min, ds.preferences.max), 0, uu, vv)
+    for i=1:length(items)
+        v[i - 1] = Array{Tuple}(0)
+        v_raw_inner[items[i]] = i - 1
+    end
+
+    for (user, item, rating) in ds
+        Base.push!(u[u_raw_inner[user]], (v_raw_inner[item], Float64(rating)))
+        Base.push!(v[v_raw_inner[item]], (u_raw_inner[user], Float64(rating)))
+    end
+
+    return surprise.Trainset(u, v, length(users), length(items), length(ds), (ds.preferences.min, ds.preferences.max), 0, u_raw_inner, v_raw_inner)
 end
 
 function Persa.train!(model::SurpriseModel, ds::Persa.CFDatasetAbstract)
-  ds_surprise = transform(ds)
+  ds_surprise  = transform(ds)
 
   return model.object[:train](ds_surprise)
 end
