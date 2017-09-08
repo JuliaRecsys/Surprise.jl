@@ -79,7 +79,7 @@ end
 SlopeOne algorithm.
 """
 function SlopeOne(dataset::Persa.CFDatasetAbstract)
-  return SlopeOne(surprise.SlopeOne(), dataset.preferences, Dict{Int, Int}(), Dict{Int, Int}());
+  return SlopeOne(surprise.SlopeOne(), dataset.preferences);
 end
 
 mutable struct SVD <: SurpriseModel
