@@ -126,6 +126,28 @@ function RSVD(dataset::Persa.CFDatasetAbstract; features = 100, n_epochs = 20, l
   return SVD(dataset, false; features = features, n_epochs = n_epochs, lrate = lrate, lambda = lambda);
 end
 
+mutable struct NMF <: SurpriseModel
+  object::PyObject
+  preferences::Persa.RatingPreferences
+  features::Int
+  n_epochs::Int
+  biased::Bool
+end
+
+"""
+    NMF(dataset::Persa.CFDatasetAbstract; features = 100, n_epochs = 20, lrate = 0.005, lambda = 0.02)
+
+Collaborative Filtering based on Non-negative Matrix Factorization.
+
+# Arguments
+- `features::Int = 15`: Number of factors.
+- `n_epochs::Int = 50`: The number of iteration of the SGD algorithm.
+- `biased::Bool = false`: If the method use biases.
+"""
+function NMF(dataset::Persa.CFDatasetAbstract; features::Int = 15, n_epochs::Int = 50, biased::Bool = false)
+  return NMF(surprise.NMF(n_factors = features, n_epochs = n_epochs, biased = biased), dataset.preferences, features, n_epochs, biased);
+end
+
 function Persa.predict(model::SurpriseModel, user::Int, item::Int)
     uid, vid = rawtoid(model.object, user, item)
 
