@@ -62,8 +62,6 @@ A basic KNN algorithm but using user or item mean.
 - `min_k::Int = 1`: Minimum number of neighbors used.
 """
 function KNNWithMeans(dataset; k::Int = 40, min_k::Int = 1)
-  println(dataset)
-  println(dataset.preferences)
   sim_options = Dict()
   sim_options["name"] = "cosine"
   return KNNWithMeans(surprise.KNNWithMeans(k = k, min_k = min_k, sim_options=sim_options), dataset.preferences, k, min_k);
