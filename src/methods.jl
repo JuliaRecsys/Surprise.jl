@@ -47,7 +47,7 @@ end
 
 mutable struct KNNWithMeans <: KNNAbstract
   object::PyObject
-  preferences::Persa.RatingPreferences{Float64}
+  preferences::Persa.RatingPreferences
   k::Int
   min_k::Int
 end
