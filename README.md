@@ -4,7 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/JuliaRecsys/Surprise.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/JuliaRecsys/Surprise.jl?branch=master)
 [![codecov.io](http://codecov.io/github/JuliaRecsys/Surprise.jl/coverage.svg?branch=master)](http://codecov.io/github/JuliaRecsys/Surprise.jl?branch=master)
 
-**Installation**: at the Julia REPL, `Pkg.add("Surprise.jl")`
+**Installation**: at the Julia REPL, `Pkg.add("Surprise")`
 
 **Reporting Issues and Contributing**: See [CONTRIBUTING.md](CONTRIBUTING.md)
 
