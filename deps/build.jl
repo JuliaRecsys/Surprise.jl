@@ -1,6 +1,6 @@
 using PyCall
 
-println("Running build.jl for the OdsIO package.")
+println("Running build.jl for the Surprise package.")
 
 # Change that to whatever packages you need.
 const PACKAGES = ["numpy", "scikit-surprise"]
