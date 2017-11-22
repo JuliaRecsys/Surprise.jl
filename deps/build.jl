@@ -15,18 +15,19 @@ end
 # Import pip
 try
     @pyimport pip
-catch
-    # If it is not found, install it
-    println("Pip not found on your sytstem. Downloading it.")
-    get_pip = joinpath(dirname(@__FILE__), "get-pip.py")
-    download("https://bootstrap.pypa.io/get-pip.py", get_pip)
-    run(`$(PyCall.python) $(proxy_arg) $get_pip --user`)
+catch ee
+    typeof(ee) <: PyCall.PyError || rethrow(ee)
+    error("""
+Python Pip not installed
+Please either:
+- Install pip
+- Rebuild Surprise.jl via `Pkg.build("Surprise")` in the julia REPL
+""")
 end
 
 try
     @pyimport surprise
 catch
     println("Installing required python packages using pip")
-    run(`$(PyCall.python) $(proxy_arg) -m pip install --user --upgrade pip setuptools`)
     run(`$(PyCall.python) $(proxy_arg) -m pip install --user $(PACKAGES)`)
 end
