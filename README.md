@@ -1,8 +1,7 @@
 # Surprise.jl - Wrapper to Surprise Python Package
 
-[![Build Status](https://travis-ci.org/JuliaRecsys/Surprise.jl.svg?branch=master)](https://travis-ci.org/JuliaRecsys/Surprise.jl)
-[![Coverage Status](https://coveralls.io/repos/JuliaRecsys/Surprise.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/JuliaRecsys/Surprise.jl?branch=master)
-[![codecov.io](http://codecov.io/github/JuliaRecsys/Surprise.jl/coverage.svg?branch=master)](http://codecov.io/github/JuliaRecsys/Surprise.jl?branch=master)
+[![][ci-img]][ci-url]
+[![][codecov-img]][codecov-url]
 
 **Installation**: at the Julia REPL, `Pkg.add("Surprise")`
 
@@ -47,3 +46,9 @@ KNNWithMeans    | A basic KNN algorithm but using user or item mean.
 SlopeOne    | SlopeOne algorithm.
 RSVD    | Regulared SVD. The algorithm is also known as SVD by Funk.
 IRSVD    | Improved Regulared SVD. Extension of RSVD algorithm adding the user and item bias.
+
+[ci-img]: https://img.shields.io/github/checks-status/JuliaRecsys/Surprise.jl/master?style=flat-square
+[ci-url]: https://github.com/JuliaRecsys/Surprise.jl/actions
+
+[codecov-img]: https://img.shields.io/codecov/c/github/JuliaRecsys/Surprise.jl?style=flat-square
+[codecov-url]: https://codecov.io/gh/JuliaRecsys/Surprise.jl
