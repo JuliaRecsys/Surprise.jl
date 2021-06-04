@@ -25,7 +25,7 @@ function KNNBasic(dataset::Persa.Dataset; k = 40, min_k = 1)
         min_k,
         dataset.preference,
         Persa.users(dataset),
-        Persa.items(dataset),
+        Persa.items(dataset)
     )
 end
 
@@ -52,7 +52,7 @@ function KNNBaseline(dataset::Persa.Dataset; k = 40, min_k = 1)
         min_k,
         dataset.preference,
         Persa.users(dataset),
-        Persa.items(dataset),
+        Persa.items(dataset)
     )
 end
 
@@ -81,7 +81,27 @@ function KNNWithMeans(dataset::Persa.Dataset; k::Int = 40, min_k::Int = 1)
         min_k,
         dataset.preference,
         Persa.users(dataset),
-        Persa.items(dataset),
+        Persa.items(dataset)
+    )
+end
+
+struct SlopeOne{T} <: SurpriseModel{T}
+    object::PyObject
+    preference::Persa.Preference{T}
+    users::Int
+    items::Int
+end
+
+"""
+    SlopeOne(dataset::Persa.Dataset)
+SlopeOne algorithm.
+"""
+function SlopeOne(dataset::Persa.Dataset)
+    return SlopeOne(
+        surprise.SlopeOne(),
+        dataset.preference,
+        Persa.users(dataset),
+        Persa.items(dataset)
     )
 end
 
