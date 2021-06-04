@@ -1,17 +1,13 @@
-using Base.Test
+using Test
 
-using Surprise
 using Persa
+using Surprise
+using DatasetsCF
 
-#Testing
-ds = Persa.createdummydataset()
+dataset = DatasetsCF.MovieLens()
 
-holdout = Persa.HoldOut(ds, 0.9)
+model = Surprise.KNNBasic(dataset)
 
-(ds_train, ds_test) = Persa.get(holdout)
+Persa.train!(model, dataset)
 
-model = Surprise.IRSVD(ds_train)
-
-Persa.train!(model, ds_train)
-
-@assert Persa.aval(model, ds_test).mae >= 0.0
+@test model[1,1] >= 0
