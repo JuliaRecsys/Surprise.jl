@@ -13,14 +13,15 @@ end
 abstract type SurpriseModel{T} <: Persa.Model{T} end
 
 function Persa.train!(model::SurpriseModel, ds::Persa.Dataset)
-    ds_surprise  = transform(ds)
-  
+    ds_surprise = transform(ds)
+
     model.object.fit(ds_surprise)
-  
+
     return nothing
 end
 
 include("utils.jl")
 include("memorybased.jl")
+include("modelbased.jl")
 
 end # module

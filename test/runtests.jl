@@ -23,3 +23,17 @@ dataset = DatasetsCF.MovieLens()
     Persa.train!(model, dataset)
     @test model[1,1] >= 0
 end
+
+@testset "Model Based Algorithms" begin
+    model = Surprise.IRSVD(dataset, n_epochs = 2)
+    Persa.train!(model, dataset)
+    @test model[1,1] >= 0
+
+    model = Surprise.RSVD(dataset, n_epochs = 2)
+    Persa.train!(model, dataset)
+    @test model[1,1] >= 0
+
+    model = Surprise.NMF(dataset, n_epochs = 2)
+    Persa.train!(model, dataset)
+    @test model[1,1] >= 0
+end
