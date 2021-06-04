@@ -22,16 +22,12 @@ julia> using Surprise
 
 julia> dataset = DatasetsCF.MovieLens();
 
-julia> (ds_train, ds_test) = Persa.get(Persa.HoldOut(dataset, 0.9));
+julia> model = Surprise.IRSVD(dataset);
 
-julia> model = Surprise.IRSVD(ds_train);
+julia> Persa.train!(model, dataset)
 
-julia> Persa.train!(model, ds_train)
-
-julia> print(Persa.aval(model, ds_test))
-MAE - 0.7380270708513149
-RMSE - 0.9369961685890544
-Coverage - 0.9988001199880012
+julia> model[1,1]
+Rating: 4.010861934456679 (4)
 ```
 
 ## Algorithms
