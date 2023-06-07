@@ -5,6 +5,7 @@ docs/site/
 *.jl.mem
 *.jld
 deps/deps.jl
+deps/build.log
 
 Manifest.toml
 docs/Manifest.toml
